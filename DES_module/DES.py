@@ -1,3 +1,5 @@
+import DES_utils
+
 class DES:
     def __init__(self, key):
         self.key = key
