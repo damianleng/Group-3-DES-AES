@@ -61,11 +61,21 @@ PC_2 = [
         34, 53, 46, 42, 50, 36, 29, 32
 ]
 
-# number of bit shifts
-shift_table = [1, 1, 2, 2,
+# number of bit shifts of encryption key schedule
+shift_table_encryption = [
+               1, 1, 2, 2,
                2, 2, 2, 2,
                1, 2, 2, 2,
-               2, 2, 2, 1]
+               2, 2, 2, 1
+]
+
+# number of bit shifts of decryption key schedule
+shift_table_decryption = [
+               0, 1, 2, 2,
+               2, 2, 2, 2,
+               1, 2, 2, 2,
+               2, 2, 2, 1
+]
 
 s_box = [
         # S-Box S1
@@ -132,3 +142,83 @@ s_box = [
             [2, 1, 14, 7, 4, 10, 8, 13, 15, 12, 9, 0, 3, 5, 6, 11]
         ]
 ]
+
+def binary_to_hexadecimal(binary):
+    hex = {"0000": '0',
+          "0001": '1',
+          "0010": '2',
+          "0011": '3',
+          "0100": '4',
+          "0101": '5',
+          "0110": '6',
+          "0111": '7',
+          "1000": '8',
+          "1001": '9',
+          "1010": 'A',
+          "1011": 'B',
+          "1100": 'C',
+          "1101": 'D',
+          "1110": 'E',
+          "1111": 'F'
+        }
+    result = ""
+    for i in range(0, len(binary), 4):
+        n = ""
+        n = n + binary[i]
+        n = n + binary[i+1]
+        n = n + binary[i+2]
+        n = n + binary[i+3]
+        result = result + hex[n]
+    return result
+
+# convert a binary value to decimal value
+def binary_to_decimal(binary): 
+    decimal, i, n = 0, 0, 0
+    while binary != 0:
+        dec = binary % 10
+        decimal = decimal + dec * pow(2, i)
+        binary = binary//10
+        i += 1
+    return decimal
+
+# convert a decimal value into a binary value
+def decimal_to_binary(num):
+    res = bin(num).replace("0b", "")
+    if(len(res) % 4 != 0):
+        div = len(res) / 4
+        div = int(div)
+        counter = (4 * (div + 1)) - len(res)
+        for i in range(0, counter):
+            res = '0' + res
+    return res
+
+# xor a and b 
+def xor(a, b):
+    result = ""
+    for i in range(len(a)):
+        if a[i] == b[i]:
+            result += "0"
+        else:
+            result += "1"
+    return result
+
+# rotate left bits by n times
+def ROL(key, n):
+    result = key
+    for i in range(n):
+        result = result[1:] + result[0]
+    return result
+
+# rotate right bits by n times
+def ROR(key, n):
+    result = key
+    for i in range(n):
+        result = result[-1] + result[:-1]
+    return result
+
+# permute the bits according to the type of permutation
+def permute(bits, type, n):
+    permutation = ""
+    for i in range(0, n):
+        permutation = permutation + bits[type[i] - 1]
+    return permutation
