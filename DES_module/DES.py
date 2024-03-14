@@ -8,7 +8,6 @@ FP = DES_utils.FP
 PC_1 = DES_utils.PC_1
 PC_2 = DES_utils.PC_2
 shift_table_encryption = DES_utils.shift_table_encryption
-shift_table_decryption = DES_utils.shift_table_decryption
 s_box = DES_utils.s_box
 
 # util functions
@@ -17,11 +16,10 @@ binary_to_decimal = DES_utils.binary_to_decimal
 decimal_to_binary = DES_utils.decimal_to_binary
 xor = DES_utils.xor
 ROL = DES_utils.ROL
-ROR = DES_utils.ROR
 permute = DES_utils.permute
 
 # generate key schedule for key encryption
-def key_schedule_encryption(key):
+def key_schedule(key):
     # split the bits in halve
     left = key[0:28]
     right = key[28:56]
@@ -43,30 +41,6 @@ def key_schedule_encryption(key):
     
     return round_key
 
-# generate key schedule for key decryption
-def key_schedule_decryption(key):
-    # split the bits in halves
-    left = key[0:28]
-    right = key[28:56]
-    round_key = []
-
-    for i in range(0, 16):
-        # shift the bits by n shifts by checking from the shift table
-        left_key = ROR(left, shift_table_decryption[i])
-        right_key = ROR(right, shift_table_decryption[i])
-    
-        # combine the left and right shifted keys
-        combined_keys = left_key + right_key	
-
-        #PC-2 permutate the bits
-        result = permute(combined_keys, PC_2, 48)
-
-        # create a array to store key for each rounds
-        round_key.append(result)
-    
-    return round_key
-
-
 # encrypt text using DES algorithm 
 def encrypt(bits, key):
     # initial permutate the bits
@@ -84,7 +58,7 @@ def encrypt(bits, key):
         right_EP = permute(right, EP, 48)
 
         # XOR round keys and expanded right key
-        xor_key = xor(right_EP, key_schedule_encryption(key)[i])
+        xor_key = xor(right_EP, key_schedule(key)[i])
 
         # use S-Boxes
         sbox_s = ""
@@ -123,12 +97,14 @@ def decrypt(bits, key):
     # PC-1 permutate the bits
     key = permute(key, PC_1, 56)
 
+    key_schedule_decryption = key_schedule(key)[::-1]
+
     for i in range(0, 16):
         # expand permuation 
         right_EP = permute(right, EP, 48)
 
         # XOR round keys and expanded right key
-        xor_key = xor(right_EP, key_schedule_decryption(key)[i])
+        xor_key = xor(right_EP, key_schedule_decryption[i])
 
         # use S-Boxes
         sbox_s = ""
@@ -154,3 +130,29 @@ def decrypt(bits, key):
     # permute with final permutation
     decrypted_text = permute(decrypted, FP, 64)
     return decrypted_text
+
+# initialize the compressor and decompressor 
+compressor = DES_utils.compress_text_to_64_bits
+decompressor = DES_utils.decompress_64_bits_to_text
+
+# let user input a text and key, then will be compressed
+text = input("Enter a text: ")
+compressed_text = compressor(text)
+key = input("Enter a key: ")
+compressed_key = compressor(key)
+
+
+# encrypt the compressed text and key
+encrypt_text = encrypt(compressed_text, compressed_key)
+
+# prompt user to type in key again in order to decrypt the encryption
+new_key = input("Enter the key again: ")
+new_compressed_key = compressor(new_key)
+
+# decrypt the encrypted text in bits and also using the same compressed key
+decrypt_text = decrypt(encrypt_text, new_compressed_key)
+lookup_table = {compressed_text: text}
+original_text = lookup_table.get(decrypt_text, "Original Text not Found")
+
+print(encrypt_text)
+print(original_text)

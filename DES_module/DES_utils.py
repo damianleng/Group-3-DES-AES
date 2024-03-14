@@ -1,3 +1,4 @@
+import hashlib
 # initial permutation table
 IP = [
         58, 50, 42, 34, 26, 18, 10, 2,
@@ -64,14 +65,6 @@ PC_2 = [
 # number of bit shifts of encryption key schedule
 shift_table_encryption = [
                1, 1, 2, 2,
-               2, 2, 2, 2,
-               1, 2, 2, 2,
-               2, 2, 2, 1
-]
-
-# number of bit shifts of decryption key schedule
-shift_table_decryption = [
-               0, 1, 2, 2,
                2, 2, 2, 2,
                1, 2, 2, 2,
                2, 2, 2, 1
@@ -209,16 +202,31 @@ def ROL(key, n):
         result = result[1:] + result[0]
     return result
 
-# rotate right bits by n times
-def ROR(key, n):
-    result = key
-    for i in range(n):
-        result = result[-1] + result[:-1]
-    return result
-
 # permute the bits according to the type of permutation
 def permute(bits, type, n):
     permutation = ""
     for i in range(0, n):
         permutation = permutation + bits[type[i] - 1]
     return permutation
+
+def compress_text_to_64_bits(text):
+    # hash the input text using SHA-256
+    hashed_text = hashlib.sha256(text.encode()).digest()
+    
+    # Take the first 8 bytes (64 bits) of the hash
+    compressed_text = hashed_text[:8]
+    
+    # Convert the bytes to a binary string
+    binary_compressed_text = ''.join(format(byte, '08b') for byte in compressed_text)
+    
+    return binary_compressed_text
+
+def decompress_64_bits_to_text(compressed_text):
+    # Convert the binary string back to bytes
+    compressed_bytes = bytes(int(compressed_text[i:i+8], 2) for i in range(0, len(compressed_text), 8))
+    
+    # Retrieve the original text from the lookup table (if available)
+    # In this example, we return the compressed bytes as hexadecimal representation
+    original_text = compressed_bytes.hex()
+    
+    return original_text
