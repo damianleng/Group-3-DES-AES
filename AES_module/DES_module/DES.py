@@ -154,6 +154,5 @@ decrypt_text = decrypt(encrypt_text, new_compressed_key)
 lookup_table = {compressed_text: text}
 original_text = lookup_table.get(decrypt_text, "Original Text not Found")
 
-
 print(encrypt_text)
 print(original_text)
