@@ -33,8 +33,8 @@ def random_prime(n):
 def random_integer(p):
     return random.randrange(2, p-2)
 
-# choose a large prime p
-p = random_prime(15)
+# choose a large prime p with 16 digits
+p = random_prime(20)
 
 # choose an integer alpha 
 alpha = random_integer(p)
@@ -51,5 +51,11 @@ B = fast_raise_power(alpha, b, p)
 Ka = fast_raise_power(B, a, p)
 Kb = fast_raise_power(A, b, p)
 
-print("Ka: ", Ka)
-print("Kb: ", Kb)
+print(len(str(Ka)))
+
+def hex_to_bin(hex):
+    binary = bin(int(hex, 16))[2:]
+    return binary
+
+
+print(len(str("26198494662568aaa")))

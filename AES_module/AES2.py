@@ -387,16 +387,18 @@ def decrypt(cipher, key_string):
     
     return result
 
-hex_string = '00112233445566778899aabbccddeeff'
-key_string = '000102030405060708090a0b0c0d0e0f'
-substituted_string = byte_substitution(hex_string) # substitute the stringz
-shifted_rows = shift_rows(substituted_string) # shift the rows and return as string
-mixed_columns = mix_columns(shifted_rows)
+# hex_string = '00112233445566778899aabbccddeeff'
+# key_string = '000102030405060708090a0b0c0d0e0f'
+# substituted_string = byte_substitution(hex_string) # substitute the stringz
+# shifted_rows = shift_rows(substituted_string) # shift the rows and return as string
+# mixed_columns = mix_columns(shifted_rows)
 
-key = key_schedule(key_string)
-cipher = encrypt(hex_string, key_string)
-decipher = decrypt(cipher, key_string)
+# hex_string = "00000048656c6c6f2c20576f726c6421"
+# key_string = "00000000000000000000000000313233"
 
-print("Original Text: " + hex_string)
-print("Cipher Text: " + cipher)
-print("Decipher Text: " + decipher)
+# cipher = encrypt(hex_string, key_string)
+# decipher = decrypt(cipher, key_string)
+
+# print("Original Text: " + hex_string)
+# print("Cipher Text: " + cipher)
+# print("Decipher Text: " + decipher)
